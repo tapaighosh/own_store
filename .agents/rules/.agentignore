@@ -1,0 +1,32 @@
+# Agent Ignore — Files to Skip
+
+## Never read, modify, or reference these paths:
+
+# Auto-generated / build artifacts
+.next/
+node_modules/
+.vercel/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Logs and history (read-only — never modify manually)
+.ai-context/prompt_history.md
+
+# OS / Editor noise
+.DS_Store
+Thumbs.db
+*.suo
+.idea/
+.vscode/settings.json
+
+# Secrets — never touch
+.env
+.env.local
+.env.production
+.env*.local
+
+## Notes
+- You MAY read `.env.example` — it contains only placeholder values
+- You MAY read `prompt_history.md` for context but ONLY append, never rewrite
