@@ -1,5 +1,7 @@
 import mongoose, { Schema, model, models, type Document } from "mongoose";
 
+import bcrypt from "bcryptjs";
+
 // ---------------------------------------------------------------------------
 // Interface
 // ---------------------------------------------------------------------------
@@ -11,6 +13,7 @@ export interface IAdmin extends Document {
   password: string;
   createdAt: Date;
   updatedAt: Date;
+  comparePassword(candidate: string): Promise<boolean>;
 }
 
 // ---------------------------------------------------------------------------
@@ -48,10 +51,23 @@ const AdminSchema = new Schema<IAdmin>(
 );
 
 // ---------------------------------------------------------------------------
-// Indexes
+// Hooks & Methods
 // ---------------------------------------------------------------------------
 
-AdminSchema.index({ email: 1 }, { unique: true });
+AdminSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  try {
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error as Error);
+  }
+});
+
+AdminSchema.methods.comparePassword = async function (candidate: string) {
+  return bcrypt.compare(candidate, this.password);
+};
 
 // ---------------------------------------------------------------------------
 // Model
