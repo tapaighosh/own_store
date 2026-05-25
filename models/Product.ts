@@ -23,6 +23,7 @@ export interface IProduct extends Document {
   featured: boolean;
   createdAt: Date;
   updatedAt: Date;
+  readonly isLowStock: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -94,8 +95,18 @@ const ProductSchema = new Schema<IProduct>(
   {
     timestamps: true,
     collection: "products",
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
+
+// ---------------------------------------------------------------------------
+// Virtuals
+// ---------------------------------------------------------------------------
+
+ProductSchema.virtual("isLowStock").get(function (this: IProduct) {
+  return this.stock > 0 && this.stock <= this.lowStockThreshold;
+});
 
 // ---------------------------------------------------------------------------
 // Indexes

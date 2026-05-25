@@ -183,3 +183,21 @@ const ShopSettings =
   model<IShopSettings>("ShopSettings", ShopSettingsSchema);
 
 export default ShopSettings;
+
+/**
+ * Retrieves the singleton shop settings document, creating it with defaults if it doesn't exist.
+ */
+export async function getOrCreateSettings(): Promise<IShopSettings> {
+  const defaults = {
+    shopName: "My Store",
+    primaryColor: "zinc",
+    accentColor: "rose",
+    font: "Inter",
+  };
+
+  return ShopSettings.findOneAndUpdate(
+    {},
+    { $setOnInsert: defaults },
+    { upsert: true, new: true, runValidators: true }
+  );
+}
