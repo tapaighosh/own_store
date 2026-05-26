@@ -2,6 +2,7 @@ import { dbConnect } from "@/lib/mongodb";
 import { getOrCreateSettings } from "@/models/ShopSettings";
 import { colorMap, accentMap, fontMap } from "@/config/theme";
 import { LenisProvider } from "@/components/store/LenisProvider";
+import { Navbar } from "@/components/store/Navbar";
 
 export async function generateMetadata() {
   await dbConnect();
@@ -57,6 +58,7 @@ export default async function StoreLayout({
     <>
       <style dangerouslySetInnerHTML={{ __html: cssVars }} />
       <LenisProvider>
+        <Navbar shopName={settings.shopName} logo={settings.logo} />
         {children}
       </LenisProvider>
     </>
