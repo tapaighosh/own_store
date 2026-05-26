@@ -8,11 +8,12 @@ import { productUpdateSchema } from "@/lib/validators/product";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await dbConnect();
-    const product = await Product.findById(params.id).populate("category").lean();
+    const product = await Product.findById(id).populate("category").lean();
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
@@ -25,7 +26,7 @@ export async function GET(
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -33,6 +34,7 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     await dbConnect();
 
     const body = await req.json();
@@ -54,7 +56,7 @@ export async function PUT(
       let counter = 2;
 
       // Ensure slug uniqueness excluding the current product
-      while (await Product.exists({ slug, _id: { $ne: params.id } })) {
+      while (await Product.exists({ slug, _id: { $ne: id } })) {
         slug = `${baseSlug}-${counter}`;
         counter++;
       }
@@ -62,7 +64,7 @@ export async function PUT(
     }
 
     const updated = await Product.findByIdAndUpdate(
-      params.id,
+      id,
       { $set: updateData },
       { new: true, runValidators: true }
     ).lean();
@@ -80,7 +82,7 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -88,11 +90,12 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     await dbConnect();
 
     // Soft delete by archiving
     const archived = await Product.findByIdAndUpdate(
-      params.id,
+      id,
       { $set: { status: "archived" } },
       { new: true }
     );
