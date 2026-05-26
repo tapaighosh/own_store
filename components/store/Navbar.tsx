@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -35,27 +35,25 @@ export function Navbar({ shopName, logo }: NavbarProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    
-    let st: ScrollTrigger | null = null;
+  useLayoutEffect(() => {
+    let ctx = gsap.context(() => {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      
+      if (!reduced && navRef.current) {
+        ScrollTrigger.create({
+          start: "top -100",
+          onUpdate: (self) => {
+            gsap.to(navRef.current, {
+              y: self.direction === 1 ? "-100%" : "0%",
+              duration: 0.3,
+              ease: "power2.out"
+            });
+          },
+        });
+      }
+    });
 
-    if (!reduced && navRef.current) {
-      st = ScrollTrigger.create({
-        start: "top -100",
-        onUpdate: (self) => {
-          gsap.to(navRef.current, {
-            y: self.direction === 1 ? "-100%" : "0%",
-            duration: 0.3,
-            ease: "power2.out"
-          });
-        },
-      });
-    }
-
-    return () => {
-      if (st) st.kill();
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
