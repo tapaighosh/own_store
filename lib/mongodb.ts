@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
 /**
  * Global cache to prevent multiple connections during hot reloads in development.
  * In production, the module is cached by Node.js module system.
@@ -19,20 +17,8 @@ if (!globalThis.mongooseCache) {
   globalThis.mongooseCache = cached;
 }
 
-/**
- * Establishes a singleton MongoDB connection using Mongoose.
- * Returns the cached connection if one already exists.
- *
- * Always call this at the top of every API route handler.
- *
- * @example
- * export async function GET() {
- *   await dbConnect();
- *   const products = await Product.find({}).lean();
- *   return NextResponse.json({ data: products });
- * }
- */
 export async function dbConnect(): Promise<typeof mongoose> {
+  const MONGODB_URI = process.env.MONGODB_URI;
   if (!MONGODB_URI) {
     throw new Error(
       "Please define the MONGODB_URI environment variable in .env.local"
