@@ -112,7 +112,6 @@ ProductSchema.virtual("isLowStock").get(function (this: IProduct) {
 // Indexes
 // ---------------------------------------------------------------------------
 
-ProductSchema.index({ slug: 1 }, { unique: true });
 ProductSchema.index({ status: 1 });
 ProductSchema.index({ category: 1 });
 ProductSchema.index({ featured: 1 });
