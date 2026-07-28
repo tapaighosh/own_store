@@ -48,7 +48,6 @@ const CategorySchema = new Schema<ICategory>(
 // Indexes
 // ---------------------------------------------------------------------------
 
-CategorySchema.index({ slug: 1 }, { unique: true });
 CategorySchema.index({ name: 1 });
 
 // ---------------------------------------------------------------------------

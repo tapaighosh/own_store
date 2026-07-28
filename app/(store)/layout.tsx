@@ -3,6 +3,7 @@ import { getOrCreateSettings } from "@/models/ShopSettings";
 import { colorMap, accentMap, fontMap } from "@/config/theme";
 import { LenisProvider } from "@/components/store/LenisProvider";
 import { Navbar } from "@/components/store/Navbar";
+import { Footer } from "@/components/store/Footer";
 
 export async function generateMetadata() {
   await dbConnect();
@@ -54,12 +55,31 @@ export default async function StoreLayout({
     }
   `;
 
+  const serializedSettings = {
+    shopName: settings.shopName,
+    logo: settings.logo,
+    footer: {
+      description: settings.footer.description,
+      email: settings.footer.email,
+      phone: settings.footer.phone,
+      address: settings.footer.address,
+      socialLinks: {
+        instagram: settings.footer.socialLinks?.instagram,
+        facebook: settings.footer.socialLinks?.facebook,
+        twitter: settings.footer.socialLinks?.twitter,
+      },
+    },
+  };
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: cssVars }} />
       <LenisProvider>
-        <Navbar shopName={settings.shopName} logo={settings.logo} />
-        {children}
+        <div className="flex flex-col min-h-screen">
+          <Navbar shopName={settings.shopName} logo={settings.logo} />
+          <div className="flex-1">{children}</div>
+          <Footer settings={serializedSettings} />
+        </div>
       </LenisProvider>
     </>
   );

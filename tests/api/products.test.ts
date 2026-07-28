@@ -10,7 +10,6 @@ jest.mock("next-auth", () => ({
 
 describe("Products API", () => {
   let categoryId: string;
-  let productId: string;
 
   beforeEach(async () => {
     // Seed a category for testing
@@ -128,7 +127,7 @@ describe("Products API", () => {
         description: "A great product description here",
         price: 50,
         category: categoryId,
-        images: ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"]
+        images: ["http://img.com/1.jpg", "http://img.com/2.jpg", "http://img.com/3.jpg", "http://img.com/4.jpg", "http://img.com/5.jpg"]
       };
       
       const req = new Request("http://localhost/api/products", { method: "POST", body: JSON.stringify(payload) });
@@ -141,7 +140,7 @@ describe("Products API", () => {
   describe("PUT /api/products/[id]", () => {
     it("updates product and returns updated doc", async () => {
       (getServerSession as jest.Mock).mockResolvedValueOnce({ user: { name: "Admin" } });
-      const p = await Product.create({ name: "To Update", slug: "to-update", price: 10, category: categoryId, images: ["http://example.com/img.jpg"], description: "This is a valid test description", description: "hello world desc" });
+      const p = await Product.create({ name: "To Update", slug: "to-update", price: 10, category: categoryId, images: ["http://example.com/img.jpg"], description: "This is a valid test description" });
       
       const payload = { price: 25 };
       const req = new Request("http://localhost/api/products/" + p._id, { method: "PUT", body: JSON.stringify(payload) });
@@ -159,7 +158,7 @@ describe("Products API", () => {
   describe("DELETE /api/products/[id]", () => {
     it("sets status to archived, not hard delete", async () => {
       (getServerSession as jest.Mock).mockResolvedValueOnce({ user: { name: "Admin" } });
-      const p = await Product.create({ name: "To Delete", slug: "to-delete", price: 10, category: categoryId, images: ["http://example.com/img.jpg"], description: "This is a valid test description", description: "hello world desc" });
+      const p = await Product.create({ name: "To Delete", slug: "to-delete", price: 10, category: categoryId, images: ["http://example.com/img.jpg"], description: "This is a valid test description" });
       
       const req = new Request("http://localhost/api/products/" + p._id, { method: "DELETE" });
       const res = await DELETE(req, { params: Promise.resolve({ id: p._id.toString() }) });
