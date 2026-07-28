@@ -1,6 +1,7 @@
 import { GET, PUT } from "@/app/api/inventory/route";
 import Product from "@/models/Product";
 import { getServerSession } from "next-auth";
+import { NextRequest } from "next/server";
 
 jest.mock("next-auth", () => ({
   getServerSession: jest.fn()
@@ -26,8 +27,7 @@ describe("Inventory API", () => {
   describe("GET /api/inventory", () => {
     it("returns all non-archived products with stock fields", async () => {
       (getServerSession as jest.Mock).mockResolvedValueOnce({ user: { name: "Admin" } });
-      const req = new Request("http://localhost/api/inventory");
-      const res = await GET(req);
+      const res = await GET();
       const json = await res.json();
       
       expect(res.status).toBe(200);
@@ -46,7 +46,7 @@ describe("Inventory API", () => {
           { id: prod2Id, stock: 200, lowStockThreshold: 50 },
         ]
       };
-      const req = new Request("http://localhost/api/inventory", { method: "PUT", body: JSON.stringify(payload) });
+      const req = new NextRequest("http://localhost/api/inventory", { method: "PUT", body: JSON.stringify(payload) });
       const res = await PUT(req);
       const json = await res.json();
       
@@ -64,7 +64,7 @@ describe("Inventory API", () => {
           { id: prod1Id, stock: -5, lowStockThreshold: 50 },
         ]
       };
-      const req = new Request("http://localhost/api/inventory", { method: "PUT", body: JSON.stringify(payload) });
+      const req = new NextRequest("http://localhost/api/inventory", { method: "PUT", body: JSON.stringify(payload) });
       const res = await PUT(req);
       const json = await res.json();
       
